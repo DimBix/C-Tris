@@ -90,8 +90,8 @@ void *move() {
 
 void *notYourTurn() {
   char garbage;
-  printf("\n%s%s%s%s%s\n%s%s%c%s\n", ORANGE, "Non è il tuo turno ", name, ", attendi", RESET,
-         "Il tuo simbolo è: ", GREEEEEN, symbol, RESET);
+  printf("\n%s%s%s%s%s\n%s%s%c%s\n", ORANGE, "Not your turn ", name, ", please wait", RESET,
+         "Your symbol is: ", GREEEEEN, symbol, RESET);
   printTable(player, game);
   printf("\n\n\n\n\033M\033[?25l");  // align table and hide cursor
   fflush(stdout);
@@ -118,21 +118,21 @@ void *turn(void *) {
   sigprocmask(SIG_SETMASK, &defSet, NULL);
 
   if (game->turn == player) {
-    printf("\n%sÈ il tuo turno %s!%s\nIl tuo simbolo è: %s%c%s\n", CYAN, name, RESET, GREEEEEN, symbol, RESET);
+    printf("\n%sIt's your turn %s!%s\nYour symbol is: %s%c%s\n", CYAN, name, RESET, GREEEEEN, symbol, RESET);
     printTable(player, game);
-    printf("\nFai la tua mossa: x y (intervallo ammesso 0 - 2)\n\n");
+    printf("\nMake your move: x y (range 0 - 2)\n\n");
     fflush(stdout);
 
     if (pthread_create(&threads[1], NULL, move, NULL) != 0) {
-      printf("ERRORE: thread create move");
+      printf("ERROR: thread create move");
     }
     if (pthread_create(&threads[0], NULL, printTimer, game) != 0) {
-      printf("ERRORE: thread create printTimer");
+      printf("ERROR: thread create printTimer");
     }
 
   } else if (game->turn != player && bot == 0) {
     if (pthread_create(&threads[2], NULL, notYourTurn, NULL) != 0) {
-      printf("ERRORE: thread create notYourTurn");
+      printf("ERROR: thread create notYourTurn");
     }
   }
 
@@ -192,13 +192,13 @@ void sigIntHandler(int segnale) {
     printf("\n");
     clearLine();
     printf(
-      "\033[1;33mSei sicuro di voler uscire? \033[0m");
+      "\033[1;33mAre your sure you want to leave the match? \033[0m");
     if (i < 4 && i != 1) {
-      printf("%s%s%d%s", ORANGE, "Tempo rimanente: ", i, " secondi");
+      printf("%s%s%d%s", ORANGE, "Time remaining: ", i, " seconds");
     } else if (i == 1) {
-      printf("%s%s%d%s", RED, "Tempo rimanente: ", i, " secondo");
+      printf("%s%s%d%s", RED, "Time remaining: ", i, " seconds");
     } else {
-      printf("%s%s%d%s", YELLOW, "Tempo rimanente: ", i, " secondi");
+      printf("%s%s%d%s", YELLOW, "Time remaining: ", i, " seconds");
     }
     printf(RESTORE_CURSOR_POSITION);
     fflush(stdout);
@@ -216,8 +216,8 @@ void sigIntHandler(int segnale) {
 void serverTermination(int segnale) {
   sigprocmask(SIG_SETMASK, &mySet, NULL);  // we block all signals
   printf(
-      "\n\r\033[?25h%s%sIl server è stato terminato, partita "
-      "abortita%s\n",
+      "\n\r\033[?25h%s%sThe server has been killed, match "
+      "aborted%s\n",
       CLEAR_LINE, RED, RESET);
   fflush(stdout);
   signal(SIGTERM, SIG_DFL);
@@ -229,8 +229,8 @@ int main(int argc, char const *argv[]) {
   // Argument check
   if (argc < 2) {  // not enough arguments
     clearLine();
-    printf("%s%s%s\n", RED, "Errore: argomenti insufficienti", RESET);
-    printf("%s%s%s\n", RED, "Uso corretto: ./TriClient nome_utente o ./TriClient nome_utente \\*", RESET);
+    printf("%s%s%s\n", RED, "Error: not enought argoments provided", RESET);
+    printf("%s%s%s\n", RED, "Correct format: ./TriClient player_name or ./TriClient player_name \\* (if you want to play against a random bot)", RESET);
     fflush(stdout);
     exit(1);
   } else {                                         // 2 or more arguments
@@ -239,8 +239,8 @@ int main(int argc, char const *argv[]) {
     if (argc == 3 && strcmp("*", argv[2]) == 0) {  // 3 arguments and 3rd one is bot call
       bot = 1;                                     // bot enabled
     } else if (argc != 2) {                        // more than 2 arguments && not bot
-      printf("%s%s%s\n", RED, "Errore: troppi argomenti", RESET);
-      printf("%s%s%s\n", RED, "Uso corretto: ./TriClient nome_utente o ./TriClient nome_utente \\*", RESET);
+      printf("%s%s%s\n", RED, "Error: too many argoments", RESET);
+      printf("%s%s%s\n", RED, "Correct format: ./TriClient player_name or ./TriClient player_name \\* (if you want to play against a random bot)", RESET);
       fflush(stdout);
       exit(1);
     }
@@ -277,7 +277,7 @@ int main(int argc, char const *argv[]) {
         exit(1);
       }
       if (atoi(buff) == 0) {  // there is not an active server
-        printf("%sErrore: nessun server attivo%s\n", RED, RESET);
+        printf("%sError: no active server%s\n", RED, RESET);
         exit(1);
       }
       break;
@@ -311,13 +311,13 @@ int main(int argc, char const *argv[]) {
   if (game->players > 0 && bot == 1) {  // there is no place for the bot to play
     semOp(semid, 4, 1);                 // unlock semaphore so other players can join
     shmdt(&game->shmid);                // detach from shm
-    printf("%s%s%s\n", RED, "Errore BOT: troppi giocatori connessi", RESET);
+    printf("%s%s%s\n", RED, "Error BOT: too many players connected", RESET);
     fflush(stdout);
     exit(1);
   } else if (game->players > 1) {  // 2 players alrady connected
     semOp(semid, 4, 1);            // unlock semaphore even if server if full
     shmdt(&game->shmid);           // detach from shm
-    printf("%sCi sono già 2 giocatori collegati\033[0m\n", RED);
+    printf("%sThere are already 2 players connected\033[0m\n", RED);
     fflush(stdout);
     exit(1);
   }

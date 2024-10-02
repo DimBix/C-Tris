@@ -31,8 +31,8 @@ sigset_t mySet, defSet;
 void serverTermination(int segnale) {
   sigprocmask(SIG_SETMASK, &mySet, NULL);
   printf(
-      "\n\r\x1b[?25h\x1b[2K\x1b[1;31mIl server è stato terminato, partita "
-      "abortita%s\n",
+      "\n\r\x1b[?25h\x1b[2K\x1b[1;31mServer has been killed, match "
+      "aborted%s\n",
       RESET);
   fflush(stdout);
   signal(SIGTERM, SIG_DFL);
@@ -102,7 +102,7 @@ void botTurnHandle(int segnale) {
   signal(10, botWaiting);
   pthread_t thread[1];
   if (pthread_create(&thread[0], NULL, botTurn, NULL) != 0) {
-    printf("Errore creazione thread");
+    printf("Error in thread creation");
     fflush(stdout);
   };
   sigprocmask(SIG_SETMASK, &defSet, NULL);
@@ -145,7 +145,7 @@ int main(int argc, char const *argv[]) {
 
   if (game->players != 1) {  // if there are already 2 players
     semOp(semid, 4, 1);
-    printf("\x1b[1;31mbot: errore giocatori\x1b[0m\n");
+    printf("\x1b[1;31mbot: error players\x1b[0m\n");
     fflush(stdout);
     shmdt(&game->shmid);  // detach from shm
     exit(1);
@@ -181,11 +181,11 @@ int main(int argc, char const *argv[]) {
       firstRound = 0;
       if (game->pidP1 == getpid()) {
         semOp(semid, 0, 1);
-        printf("SONO PLAYER 1");
+        printf("I AM PLAYER 1");
         fflush(stdout);
       } else {
         semOp(semid, 3, 1);
-        printf("SONO PLAYER 2");
+        printf("I AM PLAYER 2");
         fflush(stdout);
       }
     }

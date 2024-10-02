@@ -128,7 +128,7 @@ void startGame() {
     semOp(semid, 0, -1);  // wait for clients
     semOp(semid, 0, -1);  // wait for clients
     sigprocmask(SIG_SETMASK, &defSet, NULL);
-    printf("%s%s%s\n", YELLOW, "Partita finita", RESET);
+    printf("%s%s%s\n", YELLOW, "Match ended", RESET);
     fflush(stdout);
   }
 }
@@ -168,7 +168,7 @@ void killClients() {
 void shutdown(int segnale) {
   sigprocmask(SIG_SETMASK, &mySet, NULL);  // we block all signals
 
-  char msg[] = "\033[2K\n\033[1;46m Server chiuso \033[0m\n";
+  char msg[] = "\033[2K\n\033[1;46m Server closed \033[0m\n";
   write(1, msg, sizeof(msg));
   shmdt(&shmid);  // detach from shared memory
   killClients();
@@ -187,10 +187,10 @@ void *exitFunction() {
   pthread_cancel(waitThread[0]);  // stop waiting for players thread (print)
   clearLine();
   printf(
-      "\n\033[1;33mSei sicuro di voler uscire?\033[0m\nPremi "
+      "\n\033[1;33mAre you sure you want to leave?\033[0m\nEnter "
       "\033[3;1;33mCTRL+C\033[0m "
-      "entro 5 secondi "
-      "per chiudere il programma\033[0m\n");
+      "within 5 seconds "
+      "to close the program\033[0m\n");
 
   for (int i = 5; i > 0; i--) {
     printf(SAVE_CURSOR_POSITION);
@@ -198,11 +198,11 @@ void *exitFunction() {
     printf(MOVE_UP);
     clearLine();
     if (i < 4 && i != 1) {
-      printf("%s%s%d%s", ORANGE, "Tempo rimanente: ", i, " secondi");
+      printf("%s%s%d%s", ORANGE, "Time remaining: ", i, " seconds");
     } else if (i == 1) {
-      printf("%s%s%d%s", RED, "Tempo rimanente: ", i, " secondo");
+      printf("%s%s%d%s", RED, "Time remaining: ", i, " seconds");
     } else {
-      printf("%s%s%d%s", YELLOW, "Tempo rimanente: ", i, " secondi");
+      printf("%s%s%d%s", YELLOW, "Time remaining: ", i, " seconds");
     }
     printf(RESTORE_CURSOR_POSITION);
     fflush(stdout);
@@ -211,7 +211,7 @@ void *exitFunction() {
   printf("\r");
   printf(MOVE_UP);
   clearLine();
-  printf("%s%s%s\n", GREEN, "Ritorno al programma", RESET);
+  printf("%s%s%s\n", GREEN, "Returning to the program", RESET);
 
   signal(SIGINT, exitHandler);  // reset SIGINT to this function
 
@@ -236,8 +236,8 @@ void playerMove() {
     if (game->pidP1 == 0) {  // player 1 has disconnected
       semCtl(semid, 4, SETVAL, 0, "wait for client exit");
       game->players--;
-      printf("%sIl Giocatore 1 ha lasciato la partita%s\n", RED, RESET);
-      printf("%sPartita finita%s\n", YELLOW, RESET);
+      printf("%sPlayer 1 has left the match%s\n", RED, RESET);
+      printf("%sMatch ended%s\n", YELLOW, RESET);
       fflush(stdout);
       game->victory = 2;             // player 2 has disconnected, player 1 wins
       if (game->pidP2 != 0) {        // player 2 is connected
@@ -250,8 +250,8 @@ void playerMove() {
     } else if (game->pidP2 == 0) {  // player 2 has disconnected
       semCtl(semid, 4, SETVAL, 0, "wait for client exit");
       game->players--;
-      printf("%sIl Giocatore 2 ha lasciato la partita%s\n", RED, RESET);
-      printf("%sPartita finita%s\n", YELLOW, RESET);
+      printf("%sPlayer 2 has left the match%s\n", RED, RESET);
+      printf("%sMatch ended%s\n", YELLOW, RESET);
       fflush(stdout);
       game->victory = 1;             // player 2 has disonnected, player 1 wins
       if (game->pidP1 != 0) {        // if player 1 is connected
@@ -272,19 +272,19 @@ int main(int argc, char const *argv[]) {
   // arguments check
   if (argc != 4) {
     if (argc > 4) {
-      printf("%s%s%s\n", RED, "Errore: troppi argomenti", RESET);
+      printf("%s%s%s\n", RED, "Error: too many arguments", RESET);
     } else {
-      printf("%s%s%s\n", RED, "Errore: argomenti insufficienti", RESET);
+      printf("%s%s%s\n", RED, "Error: not enought arguments provided", RESET);
     }
-    printf("%s%s%s\n", RED, "Uso corretto: ./TriServer durata_turno simbolo_P1 simbolo_P2", RESET);
+    printf("%s%s%s\n", RED, "Correct format: ./TriServer turn_duration(seeconds)  player_1_symbol player_2_symbol", RESET);
     exit(1);
   }
   // turn timer check
   for (int i = 0; argv[1][i] != '\0'; i++) {
     if (argv[1][i] < '0' || argv[1][i] > '9') {
-      printf("%s%s%s%s%s\n", RED, "Errore: \033[3m", argv[1], "\033[23m non è un numero valido per il timer del turno",
+      printf("%s%s%s%s%s\n", RED, "Error: \033[3m", argv[1], "\033[23m it's not a valid number for timer",
              RESET);
-      printf("%s%s%s\n", RED, "Uso corretto: ./TriServer durata_turno simbolo_P1 simbolo_P2", RESET);
+      printf("%s%s%s\n", RED, "Correct format: ./TriServer turn_duration(seeconds)  player_1_symbol player_2_symbol", RESET);
       fflush(stdout);
       exit(1);
     }
@@ -293,8 +293,8 @@ int main(int argc, char const *argv[]) {
 
   // players symbols check
   if (strlen(argv[2]) != 1 || strlen(argv[3]) != 1) {
-    printf("%s%s%s\n", RED, "Errore: solo 1 carattere ammesso per ogni giocatore", RESET);
-    printf("%s%s%s\n", RED, "Uso corretto: ./TriServer durata_turno simbolo_P1 simbolo_P2", RESET);
+    printf("%s%s%s\n", RED, "Error: you can use only one character for the symbol", RESET);
+    printf("%s%s%s\n", RED, "Correct format: ./TriServer turn_duration(seeconds)  player_1_symbol player_2_symbol", RESET);
     fflush(stdout);
     exit(1);
   }
@@ -337,7 +337,7 @@ int main(int argc, char const *argv[]) {
       for (int i = 0; i < sizeof(pidBuff); i++) {
         if (pidBuff[i] == '\n') {
           if (atoi(&pidBuff[i]) != 0) {
-            printf("%sUn altro server è gia in funzione%s\n", ORANGE, RESET);
+            printf("%sAnother server is already active%s\n", ORANGE, RESET);
             exit(1);
           } else {
             break;
@@ -368,11 +368,11 @@ int main(int argc, char const *argv[]) {
   // manage existing shm
   shmid = shmget(key, sizeof(Game), IPC_CREAT | IPC_EXCL | 0600);  // try creating a new shared memory segment
   if (shmid == -1) {
-    write(1, "Esiste già un segmento di memoria condivisa con questa chiave\n", 64);
+    write(1, "A memory segment with this key already exist\n", 64);
     int shmid_old = shmget(key, sizeof(Game), IPC_CREAT);            // get old shared memory id
     shmctl(shmid_old, IPC_RMID, NULL);                               // remove old shared memory id
     shmid = shmget(key, sizeof(Game), IPC_CREAT | IPC_EXCL | 0600);  // create new shared memory segment
-    write(1, "Vecchio segmento di memoria rimosso, ne è stato creato uno nuovo\n\n", 68);
+    write(1, "Old memory segment removed, a new one has been created\n\n", 68);
   }
   game = shmat(shmid, NULL, 0600);  // attach to shm
 
@@ -388,14 +388,14 @@ int main(int argc, char const *argv[]) {
   signal(SIGQUIT, shutdown);      //
   signal(SIGHUP, shutdown);       // closing terminal
 
-  printf("\r%s\033[1;46m%s%s\n", CLEAR_LINE, " Inizializzazione server completata! ", RESET);
+  printf("\r%s\033[1;46m%s%s\n", CLEAR_LINE, " Server initialization completed! ", RESET);
   fflush(stdout);
   pthread_create(&waitThread[0], NULL, waitingForPlayers, game);
   int firstRound = 1;  // is this the first round?
 
   while (1) {
     if (game->victory != -1) {
-      write(1, "\033[1;46m Server chiuso \033[0m\n", 28);
+      write(1, "\033[1;46m Server closed \033[0m\n", 28);
       shmdt(&shmid);                  // detach from shared memory
       shmctl(shmid, IPC_RMID, NULL);  // remove shared memory
       semctl(semid, 0, IPC_RMID);     // remove semaphore
@@ -414,8 +414,8 @@ int main(int argc, char const *argv[]) {
         moveUpLine(3);
         printf("\r");
         clearLine();
-        printf("%s\n\r%s%s\n\n\r%s%s\n", "Giocatore 1 \033[32m✔\033[0m", CLEAR_LINE, "Giocatore 2 \033[32m✔\033[0m",
-               CLEAR_LINE, "\033[1;46m Tutti i giocatori pronti, che la partita abbia inizio! \033[0m");
+        printf("%s\n\r%s%s\n\n\r%s%s\n", "Player 1 \033[32m✔\033[0m", CLEAR_LINE, "Player 2 \033[32m✔\033[0m",
+               CLEAR_LINE, "\033[1;46m All players are ready, let the match begin! \033[0m");
         fflush(stdout);
         firstRound = 0;
       }

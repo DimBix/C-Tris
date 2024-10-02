@@ -95,7 +95,7 @@ int main(int argc, char const *argv[]) {
 
     int x, y;
     do {
-      printf("\n\rFai una mossa X Y\n");
+      printf("\n\rMake your move X Y\n");
       x = ask();
       y = ask();
     } while (table[x][y] != 0);

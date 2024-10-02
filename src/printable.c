@@ -74,11 +74,11 @@ void *printTimer(void *args) {
     printf(MOVE_UP);
     clearLine();
     if (i < 4 && i != 1) {
-      printf("%s%s%d%s", ORANGE, "Tempo rimanente: ", i, " secondi");
+      printf("%s%s%d%s", ORANGE, "Time remaining: ", i, " seconds");
     } else if (i == 1) {
-      printf("%s%s%d%s", RED, "Tempo rimanente: ", i, " secondo");
+      printf("%s%s%d%s", RED, "Time remaining: ", i, " seconds");
     } else {
-      printf("%s%s%d%s", YELLOW, "Tempo rimanente: ", i, " secondi");
+      printf("%s%s%d%s", YELLOW, "Time remaining: ", i, " seconds");
     }
     printf(RESTORE_CURSOR_POSITION);
     fflush(stdout);
@@ -89,7 +89,7 @@ void *printTimer(void *args) {
     printf("\r");
     printf(MOVE_UP);
     clearLine();
-    printf("\033[1;33m%s%s%s", "Nessun limite, prenditi il tuo tempo!", RESTORE_CURSOR_POSITION, MOVE_UP);
+    printf("\033[1;33m%s%s%s", "No limits, take your time", RESTORE_CURSOR_POSITION, MOVE_UP);
     fflush(stdout);
   }
 
@@ -108,35 +108,35 @@ void *waitingForPlayers(void *args) {
     clearLine();
     switch (i) {
       case 0:
-        printf("\r%s%s\033[0m", LIGHT_YELLOW, "In attesa di giocatori");
+        printf("\r%s%s\033[0m", LIGHT_YELLOW, "Waiting for players");
         fflush(stdout);
         break;
       case 1:
-        printf("\r%s%s\033[0m", LIGHT_YELLOW, "In attesa di giocatori.");
+        printf("\r%s%s\033[0m", LIGHT_YELLOW, "Waiting for players.");
         fflush(stdout);
         break;
       case 2:
-        printf("\r%s%s\033[0m", LIGHT_YELLOW, "In attesa di giocatori..");
+        printf("\r%s%s\033[0m", LIGHT_YELLOW, "Waiting for players..");
         fflush(stdout);
         break;
       case 3:
-        printf("\r%s%s\033[0m", LIGHT_YELLOW, "In attesa di giocatori...");
+        printf("\r%s%s\033[0m", LIGHT_YELLOW, "Waiting for players...");
         fflush(stdout);
         break;
     }
     switch (game->players) {
       case 0:
-        printf("\n\r%s%s\n\r%s%s\n", CLEAR_LINE, "Giocatore 1 \033[31m✖\033[0m", CLEAR_LINE,
+        printf("\n\r%s%s\n\r%s%s\n", CLEAR_LINE, "Player 1 \033[31m✖\033[0m", CLEAR_LINE,
                "Giocatore 2 \033[31m✖\033[0m");
         fflush(stdout);
         break;
       case 1:
-        printf("\n\r%s%s\n\r%s%s\n", CLEAR_LINE, "Giocatore 1 \033[32m✔\033[0m", CLEAR_LINE,
+        printf("\n\r%s%s\n\r%s%s\n", CLEAR_LINE, "Player 1 \033[32m✔\033[0m", CLEAR_LINE,
                "Giocatore 2 \033[31m✖\033[0m");
         fflush(stdout);
         break;
       case 2:
-        printf("\n\r%s%s\n\r%s%s\n", CLEAR_LINE, "Giocatore 1 \033[32m✔\033[0m", CLEAR_LINE,
+        printf("\n\r%s%s\n\r%s%s\n", CLEAR_LINE, "Player 1 \033[32m✔\033[0m", CLEAR_LINE,
                "Giocatore 2 \033[32m✔\033[0m");
         fflush(stdout);
         break;
