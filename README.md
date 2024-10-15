@@ -9,5 +9,9 @@ The program simulate a match between two players (or 1 player and a random bot) 
 - Navigate to the project directory: **`C-Tris`**
 - Run the command: **`make`**
 - To active the server, run:  **`bin/TriServer`**
-- To Start a player, run: **`bin/TriClient`**
+- To start a player, run: **`bin/TriClient`**
+
+
+## **Documentation**
+The file **`Tris_Sistemi_Operativi.pdf`** is the documentation (in italian, translation in progress) of the project.
 
